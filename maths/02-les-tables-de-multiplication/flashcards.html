@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Flashcards – Les tables de multiplication</title><style>:root{--c:#2f6fb3}
+*{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f6f3ea;color:#222}
+header{background:var(--c);color:#fff;padding:14px 18px} header h1{margin:0;font-size:1.3em} header p{margin:4px 0 0;opacity:.9}
+main{max-width:720px;margin:0 auto;padding:16px}
+.carte{background:#fff;border-radius:16px;box-shadow:0 3px 10px #0002;padding:20px;margin:12px 0}
+button{font:inherit;border:0;border-radius:12px;padding:12px 18px;margin:6px 4px 0 0;cursor:pointer;background:var(--c);color:#fff}
+button.gris{background:#888} button:disabled{opacity:.4}
+textarea,input[type=text]{width:100%;font:inherit;font-size:1.1em;padding:10px;border:2px solid #ccc;border-radius:10px}
+.barre{height:10px;background:#ddd;border-radius:5px;overflow:hidden} .barre div{height:100%;background:var(--c);transition:width .3s}
+.ok{color:#1b7f3b} .ko{color:#c5221f} .expl{background:#fff8dc;border-left:5px solid #e0b000;padding:10px 12px;border-radius:8px;margin-top:10px}
+body{font-size:1.12em} header{background:#c2477a}
+.recto{font-size:1.35em;font-weight:600;min-height:3em} .verso{border-top:3px dashed #ddd;margin-top:14px;padding-top:12px;font-size:1.2em}
+.note button{flex:1;min-width:30%} .note{display:flex;gap:6px;flex-wrap:wrap} .su{background:#1b7f3b}.moitie{background:#e09000}.pas{background:#c5221f}
+.ta{color:#555;font-style:italic} .info{color:#666;font-size:.9em}
+</style></head><body>
+<header><h1>🃏 Flashcards – Les tables de multiplication</h1><p>Maths · réponds <b>avant</b> de retourner la carte (à voix haute ou en écrivant), puis sois honnête avec toi-même !</p></header>
+<main><div class="barre"><div id="prog" style="width:0"></div></div><p class="info" id="info"></p><div id="zone"></div></main>
+<script>
+const C = [{"q": "3 × 4 = ?", "r": "<b>12<\/b>. Et dans l'autre sens, 4 × 3 = 12 aussi.", "notion": "table de 3 et de 4"}, {"q": "3 × 7 = ?", "r": "<b>21<\/b>.", "notion": "table de 3"}, {"q": "4 × 6 = ?", "r": "<b>24<\/b>.", "notion": "table de 4"}, {"q": "4 × 8 = ?", "r": "<b>32<\/b>. Astuce : 4 × 8, c'est le double de 4 × 4 = 16.", "notion": "table de 4"}, {"q": "6 × 6 = ?", "r": "<b>36<\/b>.", "notion": "table de 6"}, {"q": "6 × 7 = ?", "r": "<b>42<\/b>.", "notion": "table de 6"}, {"q": "6 × 8 = ?", "r": "<b>48<\/b>.", "notion": "table de 6"}, {"q": "6 × 9 = ?", "r": "<b>54<\/b>.", "notion": "table de 6"}, {"q": "7 × 7 = ?", "r": "<b>49<\/b>. C'est le seul résultat de la table de 7 qu'on ne trouve pas dans une autre table.", "notion": "table de 7"}, {"q": "7 × 8 = ?", "r": "<b>56<\/b>. Astuce : 5, 6, 7, 8 → 56 = 7 × 8.", "notion": "table de 7"}, {"q": "7 × 9 = ?", "r": "<b>63<\/b>.", "notion": "table de 7"}, {"q": "8 × 8 = ?", "r": "<b>64<\/b>.", "notion": "table de 8"}, {"q": "8 × 9 = ?", "r": "<b>72<\/b>.", "notion": "table de 8"}, {"q": "9 × 9 = ?", "r": "<b>81<\/b>.", "notion": "table de 9"}, {"q": "9 × 4 = ?", "r": "<b>36<\/b>. Astuce de la table de 9 : 9 × 4, c'est 10 × 4 = 40, moins 4 = 36.", "notion": "table de 9"}, {"q": "6 × … = 30", "r": "<b>5<\/b>, parce que 6 × 5 = 30.", "notion": "tables dans les deux sens"}, {"q": "7 × … = 42", "r": "<b>6<\/b>, parce que 7 × 6 = 42.", "notion": "tables dans les deux sens"}, {"q": "8 × … = 56", "r": "<b>7<\/b>, parce que 8 × 7 = 56.", "notion": "tables dans les deux sens"}, {"q": "9 × … = 72", "r": "<b>8<\/b>, parce que 9 × 8 = 72.", "notion": "tables dans les deux sens"}, {"q": "Est-ce que 3 × 8 et 8 × 3 donnent le même résultat ?", "r": "<b>Oui<\/b> : les deux font 24. On peut toujours changer l'ordre dans une multiplication. C'est pour ça qu'en connaissant la table de 3, on connaît déjà un morceau de la table de 8.", "notion": "on peut changer l'ordre"}], MATIERE = "Maths", LECON = "Les tables de multiplication", LECON_ID = "maths-les-tables-de-multiplication", CLE = 'flora_cartes_' + LECON_ID;
+
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbySeE6ZurIPOgMaBXYUxN4NKaKqaa-UWRrWXD8qoYhvYdX34e6lYOyBtgavL2p1AYUhvA/exec", CLE_SITE = "flora-ce2-2026", FILE = 'flora_envois_en_attente';
+function envoyer(ligne) {
+  const att = JSON.parse(localStorage.getItem(FILE) || '[]'); att.push(ligne);
+  localStorage.setItem(FILE, JSON.stringify(att)); vider();
+}
+function vider() {
+  if (!ENDPOINT) return;
+  const att = JSON.parse(localStorage.getItem(FILE) || '[]'); if (!att.length) return;
+  fetch(ENDPOINT, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'},
+                   body: JSON.stringify({cle: CLE_SITE, lignes: att})})
+    .then(() => localStorage.setItem(FILE, '[]')).catch(() => {});
+}
+vider();
+
+const JOUR = 864e5, auj = Math.floor(Date.now() / JOUR);
+let etat = JSON.parse(localStorage.getItem(CLE) || '{}');      // n° carte -> {ecart, du, t}
+function sauver(){localStorage.setItem(CLE, JSON.stringify(etat))}
+// Calendrier partagé entre les appareils (maison / école) via le Google Sheet : la note la plus récente gagne
+async function charger(){
+  if(!ENDPOINT) return;
+  try{ const ctl = new AbortController(); setTimeout(()=>ctl.abort(), 6000);
+    const r = await fetch(ENDPOINT + '?cle=' + encodeURIComponent(CLE_SITE) + '&lecon=' + encodeURIComponent(LECON_ID), {signal: ctl.signal});
+    const d = await r.json();
+    for(const k in d) if(C[k] && (!etat[k] || (etat[k].t||0) < (d[k].t||0))) etat[k] = d[k];
+    sauver();
+  }catch(e){}   // pas de réseau : on garde le calendrier de l'appareil
+}
+function pousser(cartes){
+  if(!ENDPOINT || !Object.keys(cartes).length) return;
+  fetch(ENDPOINT, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify({cle: CLE_SITE, calendrier: {lecon: LECON_ID, cartes: cartes}})}).catch(()=>{});
+}
+const ECARTS = [3, 7, 14, 30], vues = {};
+let file = [], faites = 0, total = 0, bilan = {su:0, moitie:0, pas:0};
+const zone = document.getElementById('zone');
+function demarrer(){
+  // cartes dues (jamais vues ou date atteinte), les plus en retard d'abord ; sinon toutes (séance libre)
+  let dues = C.map((c,i)=>i).filter(i=>!etat[i]||etat[i].du<=auj).sort((a,b)=>((etat[a]||{du:0}).du)-((etat[b]||{du:0}).du));
+  const libre = !dues.length; if(libre) dues = C.map((c,i)=>i).sort(()=>Math.random()-.5);
+  file = dues.slice(); total = file.length;
+  document.getElementById('info').textContent = libre ? 'Aucune carte à revoir aujourd\'hui : séance libre, pour le plaisir !' : total + ' carte(s) à revoir aujourd\'hui.';
+  montrer();
+  pousser(etat);   // ce qui a été fait hors connexion rejoint le calendrier partagé
+}
+function montrer(){
+  document.getElementById('prog').style.width = (100*faites/total) + '%';
+  if(!file.length) return fin();
+  const c = C[file[0]];
+  zone.innerHTML = '<div class="carte"><div class="recto">' + c.q + '</div>' +
+    '<textarea id="ta" rows="2" placeholder="Ta réponse (tu peux aussi la dire à voix haute)…"></textarea>' +
+    '<button onclick="retourner()">🔄 Retourner la carte</button></div>';
+}
+function retourner(){
+  const c = C[file[0]], t = document.getElementById('ta').value.trim();
+  zone.innerHTML = '<div class="carte"><div class="recto">' + c.q + '</div>' + (t ? '<p class="ta">Ta réponse : ' + t.replace(/</g,'&lt;') + '</p>' : '') +
+    '<div class="verso">' + c.r + '</div><p><b>Alors, tu savais ?</b></p><div class="note">' +
+    '<button class="su" onclick="noter(\'su\')">😀 Su</button><button class="moitie" onclick="noter(\'moitie\')">😐 À moitié</button>' +
+    '<button class="pas" onclick="noter(\'pas\')">😕 Pas su</button></div></div>';
+  window._rep = t;
+}
+function noter(n){
+  const i = file.shift(), c = C[i]; bilan[n]++;
+  const e = etat[i] || {ecart: 0};
+  vues[i] = (vues[i] || 0) + 1;
+  const encore = vues[i] < 3;                                              // 3 passages max par séance : elle reviendra demain
+  if(n=='su'){ e.ecart = ECARTS.find(x => x > e.ecart) || 30; faites++; }  // 3 -> 7 -> 14 -> 30 jours
+  else if(n=='moitie'){ e.ecart = 3; if(encore) file.push(i); else faites++; }                     // revient en fin de séance
+  else { e.ecart = 1; if(encore) file.splice(Math.min(3, file.length), 0, i); else faites++; }     // revient 3 cartes plus loin
+  e.du = auj + e.ecart; e.t = Date.now(); etat[i] = e; sauver(); pousser({[i]: e});
+  envoyer({date:new Date().toISOString(),matiere:MATIERE,lecon:LECON,format:'flashcard',question:c.q.replace(/<[^>]+>/g,''),
+    reponse:window._rep||'(à voix haute)',bonne:c.r.replace(/<[^>]+>/g,''),correct:n=='su'?'oui':n=='moitie'?'à moitié':'non',notion:c.notion||''});
+  montrer();
+}
+function fin(){
+  zone.innerHTML = '<div class="carte" style="text-align:center"><p style="font-size:3em;margin:0">🎉</p><h2>Séance terminée !</h2>' +
+    '<p>😀 su du premier coup : ' + bilan.su + ' · 😐 à moitié : ' + bilan.moitie + ' · 😕 pas su : ' + bilan.pas + '</p>' +
+    '<p>Les cartes difficiles reviendront <b>demain</b>, les autres dans quelques jours. Reviens chaque jour : 5 minutes suffisent !</p>' +
+    '<button class="gris" onclick="if(confirm(\'Tout remettre à zéro, sur tous les appareils ?\'))remiseAZero()">Remettre à zéro</button></div>';
+}
+function remiseAZero(){
+  const t = Date.now(); etat = {}; C.forEach((c,i)=>etat[i] = {ecart: 0, du: 0, t: t}); sauver(); pousser(etat);
+  setTimeout(()=>location.reload(), 1500);
+}
+zone.innerHTML = '<div class="carte">⏳ Je récupère tes cartes…</div>';
+charger().then(demarrer);
+</script></body></html>

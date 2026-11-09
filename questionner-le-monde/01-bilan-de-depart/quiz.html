@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Quiz – Bilan de départ</title><style>:root{--c:#2f8f5b}
+*{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f6f3ea;color:#222}
+header{background:var(--c);color:#fff;padding:14px 18px} header h1{margin:0;font-size:1.3em} header p{margin:4px 0 0;opacity:.9}
+main{max-width:720px;margin:0 auto;padding:16px}
+.carte{background:#fff;border-radius:16px;box-shadow:0 3px 10px #0002;padding:20px;margin:12px 0}
+button{font:inherit;border:0;border-radius:12px;padding:12px 18px;margin:6px 4px 0 0;cursor:pointer;background:var(--c);color:#fff}
+button.gris{background:#888} button:disabled{opacity:.4}
+textarea,input[type=text]{width:100%;font:inherit;font-size:1.1em;padding:10px;border:2px solid #ccc;border-radius:10px}
+.barre{height:10px;background:#ddd;border-radius:5px;overflow:hidden} .barre div{height:100%;background:var(--c);transition:width .3s}
+.ok{color:#1b7f3b} .ko{color:#c5221f} .expl{background:#fff8dc;border-left:5px solid #e0b000;padding:10px 12px;border-radius:8px;margin-top:10px}
+body{font-size:1.12em} header{background:#c2477a}
+.choix button{display:block;width:100%;text-align:left;background:#eef;color:#222;border:2px solid #ccd}
+.choix button.choisi{border-color:var(--c);background:#dde}
+.jeton{display:inline-block;background:#eef;border:2px solid #ccd;border-radius:10px;padding:8px 12px;margin:4px;cursor:pointer}
+.jeton.pris{opacity:.3} #fin{text-align:center} .gros{font-size:3em;margin:0}
+</style></head><body>
+<header><h1>🧠 Quiz – Bilan de départ</h1><p>Questionner le monde · écris ta réponse, puis vérifie. Pas de stress : chaque erreur t'apprend quelque chose !</p></header>
+<main><div class="barre"><div id="prog" style="width:0"></div></div><div id="zone"></div></main>
+<script>
+const Q = [{"type": "qcm", "q": "Quand la glace fond, elle devient :", "choix": ["de l'eau liquide", "de la vapeur d'eau", "du sable"], "bonne": 0, "explication": "Quand la glace fond, elle devient de l'eau liquide : c'est la fusion. La glace est de l'eau solide. La vapeur d'eau, c'est autre chose : c'est de l'eau à l'état de gaz, quand l'eau chauffe très fort, par exemple dans une casserole.", "notion": "états de l'eau, fusion (p. 47)"}, {"type": "court", "q": "L'eau existe sous trois états : solide (la glace), liquide, et … ? Écris le mot qui manque.", "reponses": ["gaz", "gazeux", "vapeur", "la vapeur", "vapeur d'eau", "la vapeur d'eau"], "tolerance": true, "explication": "Le troisième état, c'est le gaz : l'eau devient de la vapeur d'eau. La glace est solide, on peut la tenir. L'eau liquide coule. La vapeur d'eau ne se tient pas et ne coule pas : elle part dans l'air.", "notion": "les trois états de la matière (p. 47)"}, {"type": "vf", "q": "Vrai ou faux : l'air, ce n'est rien du tout.", "bonne": false, "explication": "C'est faux : l'air est une vraie matière, même si on ne le voit pas. On le sent quand il y a du vent, et un ballon de baudruche se remplit d'air. Le programme du CE2 étudie justement les gaz, comme l'air.", "notion": "existence de l'air (p. 47)"}, {"type": "qcm", "q": "De quoi une plante a-t-elle besoin pour vivre ?", "choix": ["De lumière et d'eau", "De chocolat", "De rien du tout"], "bonne": 0, "explication": "Une plante a besoin de lumière et d'eau pour vivre. Sans lumière, elle jaunit. Sans eau, elle sèche. Une plante n'a pas besoin de nourriture comme nous : elle fabrique elle-même sa nourriture grâce à la lumière.", "notion": "besoins vitaux des végétaux (p. 48)"}, {"type": "qcm", "q": "Le cheval mange de l'herbe et du foin. Il est :", "choix": ["herbivore (il mange des plantes)", "carnivore (il mange de la viande)"], "bonne": 0, "explication": "Le cheval est herbivore : il ne mange que des plantes, comme l'herbe, le foin et les carottes. Un carnivore, comme le loup, mange de la viande.", "notion": "régimes alimentaires (p. 48)"}, {"type": "court", "q": "Combien y a-t-il d'années dans un siècle ?", "reponses": ["100", "cent"], "explication": "Un siècle, c'est 100 ans. Un millénaire, c'est beaucoup plus long : c'est 1 000 ans, soit dix siècles.", "notion": "unités de durée : siècle, millénaire (p. 51)"}, {"type": "court", "q": "Combien y a-t-il de minutes dans une heure ?", "reponses": ["60", "soixante"], "explication": "Une heure, c'est 60 minutes. Et une minute, c'est 60 secondes. Il ne faut pas compter 100 minutes dans une heure : l'heure ne marche pas comme les centaines.", "notion": "unités de durée : heure, minute (p. 51)"}, {"type": "court", "q": "Sur une carte, le nord est en haut. Quel point cardinal est en bas ?", "reponses": ["sud", "le sud"], "tolerance": true, "explication": "En bas, c'est le sud : le sud est le contraire du nord. À droite, c'est l'est, et à gauche, c'est l'ouest.", "notion": "points cardinaux (p. 50)"}, {"type": "qcm", "q": "Pour qu'une ampoule s'allume avec une pile, il faut :", "choix": ["un circuit fermé, sans trou", "un circuit ouvert, avec un trou"], "bonne": 0, "explication": "L'ampoule s'allume seulement si le circuit est fermé : l'électricité doit pouvoir faire tout le tour, de la pile à l'ampoule et retour. S'il y a un trou, le circuit est ouvert et l'ampoule reste éteinte. C'est ce que fait un interrupteur : il ouvre ou il ferme le circuit.", "notion": "circuit électrique simple (p. 49)"}, {"type": "qcm", "q": "Lequel de ces objets laisse passer l'électricité ?", "choix": ["une cuillère en métal", "une règle en plastique", "un crayon en bois"], "bonne": 0, "explication": "Le métal laisse passer l'électricité : c'est un bon conducteur. Le plastique et le bois ne la laissent pas passer : ce sont des isolants. C'est pour ça que les fils électriques sont en métal à l'intérieur et en plastique à l'extérieur.", "notion": "conducteurs et isolants (p. 49)"}], MATIERE = "Questionner le monde", LECON = "Bilan de départ";
+
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbySeE6ZurIPOgMaBXYUxN4NKaKqaa-UWRrWXD8qoYhvYdX34e6lYOyBtgavL2p1AYUhvA/exec", CLE_SITE = "flora-ce2-2026", FILE = 'flora_envois_en_attente';
+function envoyer(ligne) {
+  const att = JSON.parse(localStorage.getItem(FILE) || '[]'); att.push(ligne);
+  localStorage.setItem(FILE, JSON.stringify(att)); vider();
+}
+function vider() {
+  if (!ENDPOINT) return;
+  const att = JSON.parse(localStorage.getItem(FILE) || '[]'); if (!att.length) return;
+  fetch(ENDPOINT, {method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'},
+                   body: JSON.stringify({cle: CLE_SITE, lignes: att})})
+    .then(() => localStorage.setItem(FILE, '[]')).catch(() => {});
+}
+vider();
+
+function norm(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[.,;:!?'’"«»()\-]/g,' ').replace(/\s+/g,' ').trim()}
+function lev(a,b){const d=[...Array(a.length+1)].map((_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+ for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]==b[j-1]?0:1));return d[a.length][b.length]}
+function juste(q,rep){const r=norm(rep);if(!r)return false;
+  if(q.contient){const m=' '+r+' ';return q.contient.every(k=>k.split('|').some(v=>m.includes(norm(v))))&&!(q.exclut||[]).some(k=>m.includes(norm(k)))}
+  if(q.reponses.some(b=>norm(b)==r))return true;
+  const proche=q.tolerance&&q.reponses.find(b=>{b=norm(b);return b.length>=5&&lev(r,b)<=1});
+  return proche?'presque':false}
+let file=Q.map((q,i)=>i), pos=0, points=0, rates=[], deuxieme=false, total=Q.length;
+const zone=document.getElementById('zone');
+function prog(){document.getElementById('prog').style.width=(100*Math.min(pos,file.length)/file.length)+'%'}
+function montrer(){
+  prog(); if(pos>=file.length){ if(!deuxieme&&rates.length){deuxieme=true;file=rates;rates=[];pos=0;
+      zone.innerHTML='<div class="carte"><h2>🔁 2e chance !</h2><p>On reprend les questions ratées. Relis bien les explications dans ta tête avant de répondre.</p><button onclick="montrer()">C\'est parti</button></div>';return}
+    return fin()}
+  const q=Q[file[pos]]; let h='<div class="carte"><p><small>Question '+(pos+1)+' / '+file.length+(deuxieme?' · 2e chance':'')+'</small></p><h2>'+q.q+'</h2>';
+  if(q.type=='court') h+='<input type="text" id="rep" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ta réponse…" onkeydown="if(event.key==\'Enter\')verifier()">';
+  if(q.type=='qcm') h+='<div class="choix">'+q.choix.map((c,i)=>'<button onclick="choisir(this,'+i+')">'+c+'</button>').join('')+'</div>';
+  if(q.type=='vf') h+='<div class="choix"><button onclick="choisir(this,1)">✔️ Vrai</button><button onclick="choisir(this,0)">❌ Faux</button></div>';
+  if(q.type=='ordre'){ordre=[];const m=q.elements.map((e,i)=>i).sort(()=>Math.random()-.5);
+    h+='<p><small>Touche les éléments dans le bon ordre.</small></p><div id="jetons">'+m.map(i=>'<span class="jeton" onclick="prendre(this,'+i+')">'+q.elements[i]+'</span>').join('')+'</div><p id="ordre" style="min-height:2em;font-weight:bold"></p><button class="gris" onclick="montrer()">↺ Recommencer</button>'}
+  h+='<div id="retour"></div><button id="valider" onclick="verifier()">Vérifier</button></div>';
+  zone.innerHTML=h; const r=document.getElementById('rep'); if(r) r.focus(); choix=null;
+}
+let choix=null, ordre=[];
+function choisir(b,i){document.querySelectorAll('.choix button').forEach(x=>x.classList.remove('choisi'));b.classList.add('choisi');choix=i}
+function prendre(el,i){if(el.classList.contains('pris'))return;el.classList.add('pris');ordre.push(i);
+  document.getElementById('ordre').textContent=ordre.map(k=>Q[file[pos]].elements[k]).join(' → ')}
+function verifier(){
+  const q=Q[file[pos]]; let donnee, ok;
+  let presque=false;
+  if(q.type=='court'){donnee=document.getElementById('rep').value;if(!donnee.trim())return;ok=juste(q,donnee);if(ok=='presque'){presque=true;ok=true}}
+  if(q.type=='qcm'){if(choix===null)return;donnee=q.choix[choix];ok=choix==q.bonne}
+  if(q.type=='vf'){if(choix===null)return;donnee=choix?'vrai':'faux';ok=(choix==1)==q.bonne}
+  if(q.type=='ordre'){if(ordre.length<q.elements.length)return;donnee=ordre.map(k=>q.elements[k]).join(' / ');ok=ordre.every((k,i)=>k==i)}
+  const bonne=q.type=='court'?q.reponses[0]:q.type=='qcm'?q.choix[q.bonne]:q.type=='vf'?(q.bonne?'vrai':'faux'):q.elements.join(' / ');
+  if(ok&&!deuxieme)points++; if(!ok&&!deuxieme)rates.push(file[pos]);
+  envoyer({date:new Date().toISOString(),matiere:MATIERE,lecon:LECON,format:'quiz',question:q.q.replace(/<[^>]+>/g,''),
+    reponse:donnee,bonne:bonne,correct:presque?'presque (orthographe)':ok?'oui':'non',notion:q.notion||''});
+  document.getElementById('retour').innerHTML='<h3 class="'+(ok?'ok':'ko')+'">'+(presque?'✅ Presque ! Attention à l\'orthographe : on écrit <u>'+bonne+'</u>':ok?'✅ Bravo !':'❌ Pas tout à fait… La bonne réponse : '+bonne)+'</h3><div class="expl">💡 '+q.explication+'</div>';
+  const v=document.getElementById('valider'); v.textContent='Question suivante ➜'; v.onclick=()=>{pos++;montrer()};
+  if(ok) confettis(20);
+}
+function fin(){
+  const n=Math.round(20*points/total), badge=n>=18?'🏆 Champion !':n>=14?'🥇 Très bien !':n>=10?'🥈 Bien, continue !':'💪 On s\'entraîne encore !';
+  zone.innerHTML='<div class="carte" id="fin"><p class="gros">'+badge.split(' ')[0]+'</p><h2>'+badge.slice(3)+'</h2><p>Du premier coup : <b>'+points+' / '+total+'</b> (soit '+n+' / 20)</p><p>Refais ce quiz dans 3 jours : c\'est en se testant plusieurs fois qu\'on retient pour de bon.</p><button onclick="location.reload()">Recommencer</button></div>';
+  confettis(n*6); prog();
+}
+function confettis(n){for(let i=0;i<n;i++){const c=document.createElement('div');c.textContent=['🎉','⭐','✨','🎊'][i%4];
+  c.style.cssText='position:fixed;top:-30px;left:'+Math.random()*100+'vw;font-size:24px;transition:transform 2.2s ease-in,opacity 2.2s;z-index:9';
+  document.body.appendChild(c);requestAnimationFrame(()=>{c.style.transform='translateY('+(innerHeight+60)+'px) rotate('+(Math.random()*720-360)+'deg)';c.style.opacity=.2});
+  setTimeout(()=>c.remove(),2300)}}
+montrer();
+</script></body></html>
